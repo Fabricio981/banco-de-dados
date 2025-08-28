@@ -1,0 +1,137 @@
+---1
+SELECT * FROM produtos WHERE nome LIKE '%Arroz%';
+
+---2
+EXPLAIN SELECT * FROM produtos WHERE nome LIKE '%Arroz%';
+
+---3
+CREATE INDEX idx_nome_produto ON produtos(nome);
+
+---4
+EXPLAIN SELECT * FROM produtos WHERE nome LIKE '%Arroz%';
+
+---5
+ALTER TABLE produtos ALTER COLUMN peso TYPE INT;
+
+---6
+ALTER TABLE cliente ALTER COLUMN endereco_id TYPE VARCHAR;
+
+---7
+CREATE USER fabricio WITH PASSWORD 'senha123';
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO fabricio;
+
+---8
+CREATE USER leticia WITH PASSWORD 'senha456';
+GRANT SELECT ON TABLE produtos TO leticia;
+
+select * FROM produtos WHERE nome LIKE '%Arroz%';
+
+EXPLAIN SELECT * FROM produtos WHERE nome LIKE '%Arroz%';
+
+CREATE INDEX idx_nome_produto ON produtos(nome);
+
+EXPLAIN SELECT * FROM produtos WHERE nome LIKE '%Arroz%';
+
+ALTER TABLE produtos ALTER COLUMN peso TYPE INT;
+
+ALTER TABLE cliente ALTER COLUMN endereco_id TYPE VARCHAR;
+
+---9
+-- INNER JOIN
+SELECT p.nome, f.nome_fornecedor FROM produtos p INNER JOIN fornecedor f ON p.fornecedor_id = f.id;
+
+-- LEFT JOIN
+SELECT p.nome, f.nome_fornecedor FROM produtos p LEFT JOIN fornecedor f ON p.fornecedor_id = f.id;
+
+-- RIGHT JOIN
+SELECT p.nome, f.nome_fornecedor FROM produtos p RIGHT JOIN fornecedor f ON p.fornecedor_id = f.id;
+
+SELECT c.nome, e.cidade FROM cliente c INNER JOIN endereco e ON c.endereco_id = e.id;
+SELECT c.nome, e.cidade FROM cliente c LEFT JOIN endereco e ON c.endereco_id = e.id;
+SELECT c.nome, e.cidade FROM cliente c RIGHT JOIN endereco e ON c.endereco_id = e.id;
+
+SELECT f.nome, e.bairro FROM funcionario f INNER JOIN endereco e ON f.endereco_id = e.id;
+SELECT f.nome, e.bairro FROM funcionario f LEFT JOIN endereco e ON f.endereco_id = e.id;
+SELECT f.nome, e.bairro FROM funcionario f RIGHT JOIN endereco e ON f.endereco_id = e.id;
+
+SELECT v.cliente_id, c.nome FROM venda v INNER JOIN cliente c ON v.cliente_id = c.id;
+SELECT v.cliente_id, c.nome FROM venda v LEFT JOIN cliente c ON v.cliente_id = c.id;
+SELECT v.cliente_id, c.nome FROM venda v RIGHT JOIN cliente c ON v.cliente_id = c.id;
+
+---10
+UPDATE cliente SET genero = NULL WHERE id IN (1, 2, 3);
+UPDATE funcionario SET funcao = NULL WHERE salario < 2000;
+
+---11
+-- Consulta 1: Produtos x Fornecedores
+-- INNER JOIN
+SELECT p.id, p.nome AS produto, f.nome_fornecedor AS fornecedor
+FROM produtos p
+INNER JOIN fornecedor f ON p.fornecedor_id = f.id;
+
+-- LEFT JOIN
+SELECT p.id, p.nome AS produto, f.nome_fornecedor AS fornecedor
+FROM produtos p
+LEFT JOIN fornecedor f ON p.fornecedor_id = f.id;
+
+-- RIGHT JOIN
+SELECT p.id, p.nome AS produto, f.nome_fornecedor AS fornecedor
+FROM produtos p
+RIGHT JOIN fornecedor f ON p.fornecedor_id = f.id;
+
+
+-- Consulta 2: Cliente x Endereço
+-- INNER JOIN
+SELECT c.id, c.nome AS cliente, e.cidade, e.uf
+FROM cliente c
+INNER JOIN endereco e ON c.endereco_id = e.id;
+
+-- LEFT JOIN
+SELECT c.id, c.nome AS cliente, e.cidade, e.uf
+FROM cliente c
+LEFT JOIN endereco e ON c.endereco_id = e.id;
+
+-- RIGHT JOIN
+SELECT c.id, c.nome AS cliente, e.cidade, e.uf
+FROM cliente c
+RIGHT JOIN endereco e ON c.endereco_id = e.id;
+
+
+-- Consulta 3: Funcionário x Endereço
+-- INNER JOIN
+SELECT f.id, f.nome AS funcionario, e.bairro, e.cidade
+FROM funcionario f
+INNER JOIN endereco e ON f.endereco_id = e.id;
+
+-- LEFT JOIN
+SELECT f.id, f.nome AS funcionario, e.bairro, e.cidade
+FROM funcionario f
+LEFT JOIN endereco e ON f.endereco_id = e.id;
+
+-- RIGHT JOIN
+SELECT f.id, f.nome AS funcionario, e.bairro, e.cidade
+FROM funcionario f
+RIGHT JOIN endereco e ON f.endereco_id = e.id;
+
+
+-- Consulta 4: Venda x Cliente x Produto x Funcionário
+-- INNER JOIN
+SELECT v.cliente_id, c.nome AS cliente, v.produtos_id, p.nome AS produto, f.nome AS funcionario
+FROM venda v
+INNER JOIN cliente c ON v.cliente_id = c.id
+INNER JOIN produtos p ON v.produtos_id = p.id
+INNER JOIN funcionario f ON v.funcionario_id = f.id;
+
+-- LEFT JOIN (mantém todas as vendas, mesmo se alguma FK faltar)
+SELECT v.cliente_id, c.nome AS cliente, v.produtos_id, p.nome AS produto, f.nome AS funcionario
+FROM venda v
+LEFT JOIN cliente c ON v.cliente_id = c.id
+LEFT JOIN produtos p ON v.produtos_id = p.id
+LEFT JOIN funcionario f ON v.funcionario_id = f.id;
+
+-- RIGHT JOIN (mantém todas as linhas da última tabela da direita – aqui, funcionario)
+SELECT v.cliente_id, c.nome AS cliente, v.produtos_id, p.nome AS produto, f.nome AS funcionario
+FROM venda v
+RIGHT JOIN funcionario f ON v.funcionario_id = f.id
+RIGHT JOIN cliente c ON v.cliente_id = c.id
+RIGHT JOIN produtos p ON v.produtos_id = p.id;
