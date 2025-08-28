@@ -1,0 +1,169 @@
+create database db_revenda_fabricio;
+
+create table endereco (
+	id serial primary key,
+	pais varchar(100) not null,
+	uf char(2) not null,
+	cidade varchar(100) not null,
+	bairro varchar(100) not null,
+	rua varchar(100) not null,
+	numero char(15) not null,
+	complemento varchar(100) not null,
+	cep char(8) not null unique,
+	referencia text
+);
+
+create table fornecedor (
+	id serial primary key,
+	nome_fornecedor varchar(100) not null,
+	cnpj char(14) not null unique,
+	descricao_prod_fornecedor text not null,
+	endereco_id int not null,
+	foreign key (endereco_id) references endereco (id)
+);
+	
+create table produtos(
+	id serial primary key,
+	nome varchar(50) not null, 
+	descricao text not null,
+	peso varchar(5) not null,
+	valor_produto decimal(5,2) not null,
+	fornecedor_id int not null,
+	foreign key (fornecedor_id) references fornecedor(id)
+);
+	
+create table cliente(
+	id serial primary key,
+	nome varchar(50) not null,
+	cpf char(11) not null unique,
+	email varchar(100) not null unique,
+	telefone char(9) not null unique,
+	endereco_id int not null,
+	foreign key (endereco_id) references endereco(id),
+	genero varchar(50),
+	idade char(3)
+);
+	
+create table funcionario(
+	id serial primary key,
+	nome varchar(50) not null,
+	cpf char(11) not null unique,
+	email varchar(100) not null unique,
+	telefone char(9) not null unique,
+	endereco_id int not null,
+	foreign key (endereco_id) references endereco(id),
+	funcao varchar(50),
+	salario numeric
+);
+	
+create table venda(
+	cliente_id serial,
+	produtos_id serial,
+	PRIMARY KEY (cliente_id, produtos_id),
+	funcionario_id int not null,
+	foreign key (funcionario_id) references funcionario(id)
+);
+
+
+insert into endereco(pais, uf, cidade, bairro, rua, numero, complemento, cep, referencia) 
+values ('Brasil','SP',	'São Paulo', 'Vila Mariana', 'Rua das Flores',	'123',	'Apto 45, Bloco B', '04018020', 'Próx. ao metrô Ana Rosa'),
+('Brasil', 'RJ', 'Rio de Janeiro',	'Copacabana',	'Av. Atlântica',	'456',	'Cobertura', '22070000', 'Em frente ao posto 5 da praia'),
+('Brasil', 'MG',	'Belo Horizonte',	'Savassi',	'Rua Pernambuco',	'789',	'Loja 2',	'30130151',	'Ao lado do Shopping Pátio'),
+('Brasil', 'RS',	'Porto Alegre',	'Moinhos de Vento',	'Rua Padre Chagas',	'321',	'Sala 101',	'90570080',	'Próx. ao Parcão'),
+('Brasil', 'BA',	'Salvador',	'Barra',	'Av. Oceânica',	'654',	'Casa térrea',	'40140130',	'Próx. ao Farol da Barra'),
+('Brasil', 'PE', 'Recife',	'Boa Viagem',	'Rua dos Navegantes',	'987',	'Apto 301',	'51021010',	'Próx. ao Shopping Recife'),
+('Brasil', 'PR',	'Curitiba',	'Batel',	'Av. do Batel',	'159',	'Sobreloja',	'80420090',	'Em frente ao Hard Rock Café'),
+('Brasil', 'CE', 'Fortaleza',	'Meireles',	'Rua Tibúrcio Cavalcante',	'753',	'Apto 1002',	'60125100',	'Próx. à Av. Beira Mar'),
+('Brasil', 'DF',	'Brasília',	'Asa Sul',	'SQS 308 Bloco A',	'10',	'Apto 202',	'70355010',	'Próx. ao Parque da Cidade'),
+('Brasil', 'AM',	'Manaus',	'Adrianópolis',	'Rua Salvador',	'88',	'Casa 3',	'9057000',	'Próx. ao Manauara Shopping');
+
+insert into fornecedor(nome_fornecedor, cnpj, descricao_prod_fornecedor, endereco_id) 
+values 	('Miguel da Silva', '12345678000101', 'Grãos e Cereais', 1),
+	('Carlos Chagas', '22345678000102', 'Óleos e Gorduras', 2),
+	('Juliana Motta', '32345678000103', 'Snacks e Doces', 3),
+	('Vivian Fonseca', '42345678000104', 'Laticínios', 4),
+	('Pedro Ademir', '52345678000105', 'Bebidas', 5),
+	('Julia Lopes', '62345678000106', 'Conservas', 6),
+	('Cauã Fernandes', '72345678000107', 'Laticínios', 7),
+	('Kátia Kiss', '82345678000108', 'Frios', 8),
+	('Débora Saco', '92345678000109', 'Grãos e Cereais', 9),
+	('Anthonio Ramos', '10345678000100', 'Óleos e Gorduras', 10);
+
+INSERT INTO produtos (nome, descricao, peso, valor_produto, fornecedor_id) 
+VALUES 
+('Arroz Tipo 1','Arroz branco polido, tipo 1, ideal para o preparo diário de refeições.','5kg', 22.90, 1),
+('Óleo de soja','Óleo vegetal refinado, usado para frituras e preparo de alimentos.','900ml', 8.49, 2),
+('Biscoito recheado','Biscoito crocante com recheio sabor chocolate, ideal para lanches rápidos.','120g', 3.99, 3),
+('Leite UHT integral','Leite longa vida integral, pronto para consumo ou preparo de receitas.', '1L', 4.79, 4),
+('Café torrado e moído','Café 100% arábica, torrado e moído, com aroma intenso e sabor encorpado.', '500g', 16.90, 5),
+('Molho de tomate','Molho pronto à base de tomate, ideal para massas e pratos diversos.', '340g', 3.49, 6),
+('Iogurte sabor morango','Iogurte cremoso com polpa de morango, pronto para consumo individual.', '170g', 2.99, 7),
+('Presunto fatiado','Presunto cozido fatiado, pronto para consumo em sanduíches e aperitivos.', '200g', 7.49, 8),
+('Feijão carioca','Feijão tipo carioca, grãos selecionados, ideal para o dia a dia.', '1Kg', 8.90, 9),
+('Azeite de oliva extra virgem','Azeite prensado a frio, ideal para saladas, finalização de pratos e culinária gourmet.', '500ml', 24.90, 10);
+
+insert into cliente (nome, cpf, email, telefone, endereco_id, genero, idade) 
+values ('Ana Luiza','11111111110','ana@email.com','999993491',1,'Feminino','15'),
+('João Viana','22222222229','joao@email.com','999999092',2,'Masculino','20'),
+('Mariana Silva','33333333383','mariana@email.com','999999893',3,'Feminino','26'),
+('Pedro Sanpaio','44444444447','pedro@email.com','999799994',4,'Masculino','55'),
+('Vivian Rocha','55555555556','vivian@email.com','969999995',5,'Masculino','42'),
+('Juliana Reis','66666666661','juliana@email.com','959999996',6,'Feminino','28'),
+('Davi Melo','77777777772','davi@email.com','999999497',7,'Masculino','30'),
+('Camila Loures','88888888883','camila@email.com','999399998',8,'Feminino','39'),
+('Carlos Araújo','99999999994','carlos@email.com','999999929',9,'Masculino','21'),
+('Beatriz Fernandes','10101010105','beatriz@email.com','999919900',10,'Feminino','54');
+
+INSERT INTO funcionario (nome, cpf, email, telefone, endereco_id, funcao, salario) 
+VALUES 
+('Pedro Silva','12189212121','pedor@empresa.com','85088881',1,'Vendedor',1600),
+('Fernanda Carminate','13131313081','fernandaC@empresa.com','88938882',2,'Caixa',2000),
+('Ricardo Rodrigues','14109414141','ricardo@empresa.com','81788883',3,'Gerente',4000),
+('Flavio Lima','15151085151','flavio@empresa.com','88038884',4,'Vendedor',2200),
+('Gustavo Justen','16196616161','gtjusten@empresa.com','88948885',5,'Estoque',1400),
+('Larissa Manuela','17171657171','larissam@empresa.com','34888886',6,'Caixa',2000),
+('Taina Costa','18181858181','taina@empresa.com','88883887',7,'Vendedor',1600),
+('Mariana Alves','13891919191','mariana@empresa.com','88188888',8,'RH',3000),
+('Eduardo Vanconcelos','20202022702','eduardo@empresa.com','88881489',9,'Gerente',4000),
+('Paula Andrade','21212118212','paula@empresa.com','88888130',10,'Vendedor',1600);
+
+
+insert into venda (cliente_id, produtos_id, funcionario_id) 
+values (1,1,1),
+(2,2,2),
+(3,3,3),
+(4,4,4),
+(5,5,5),
+(6,6,6),
+(7,7,7),
+(8,8,8),
+(9,9,9),
+(10,10,10);
+
+
+create view relatorio_vendas as
+select 
+    v.cliente_id as cliente_id,
+    v.produtos_id as produtos_id,
+    c.nome as cliente,
+    p.nome as produto,
+    p.valor_produto as preco,
+    f.nome as funcionario
+from venda v
+join cliente c on v.cliente_id = c.id
+join produtos p on v.produtos_id = p.id
+join funcionario f on v.funcionario_id = f.id;
+
+create view produtos_e_fornecedores as
+select 
+    p.id as produto_id,
+    p.nome as produto,
+    p.descricao,
+    p.peso,
+    p.valor_produto,
+    f.nome_fornecedor as fornecedor
+from produtos p
+join fornecedor f on p.fornecedor_id = f.id;
+
+select * from relatorio_vendas;
+select * from produtos_e_fornecedores;
